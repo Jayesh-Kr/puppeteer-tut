@@ -2,12 +2,17 @@ import puppeteer from 'puppeteer';
 // Or import puppeteer from 'puppeteer-core';
 
 // Launch the browser and open a new blank page
-const browser = await puppeteer.launch();
+const browser = await puppeteer.launch({
+    headless : false
+});
 const page = await browser.newPage();
+// const page2 = await browser.newPage();
 
 // Navigate the page to a URL.
 console.log("started");
 await page.goto('https://developer.chrome.com/');
+// await page2.goto('https://www.youtube.com/');
+// await page2.screenshot({path:'example.png'});
 console.log("step 1");
 
 // Set screen size.
