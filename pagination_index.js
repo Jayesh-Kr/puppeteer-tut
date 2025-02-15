@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-
+import fs from 'fs';
 const browser = await puppeteer.launch({
     headless : false,
     userDataDir : './tmp',
@@ -15,10 +15,10 @@ let isNextBtn = true;
 let pageNo = 0;
 while(isNextBtn) {
     pageNo++;
+    await page.waitForSelector('._cDEzb_grid-row_3Cywl > ._cDEzb_grid-column_2hIsc');
     console.log("Scrolling start.....");
     await autoScroll(page);
     console.log("Scrolling ended....");
-    await page.waitForSelector('._cDEzb_grid-row_3Cywl > ._cDEzb_grid-column_2hIsc');
     // console.log("Fetching products.....")
     const products = await page.$$("._cDEzb_grid-row_3Cywl > ._cDEzb_grid-column_2hIsc");
     // console.log("Products fetched..");
@@ -32,6 +32,12 @@ while(isNextBtn) {
                 if(title !== null)
                     items.push({title:title,price:price,imgUrl:imgUrl,pageNo})
                 // items.push({pageNo,price:price})
+
+                // Creating CSV file....
+            fs.appendFile('results.csv',`${title}, ${price}, ${imgUrl}, ${pageNo}\n`,(err)=> {
+                if(err)
+                    throw err;
+            })
         } catch(err) {
             console.log(err.message);
         }
@@ -44,9 +50,11 @@ while(isNextBtn) {
         console.log("Next btn clicked");
     }
 }
+console.log("CSV file created");
 console.log(items.length);
-console.log([...items]);
+// console.log([...items]);
 
+await browser.close();
 
 async function autoScroll(page){
     await page.evaluate(async () => {
